@@ -1,0 +1,45 @@
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/
+.pnp.*
+
+# Build outputs
+dist/
+build/
+target/
+*.log
+
+# Supabase
+.supabase/
+
+# Anchor
+.anchor/
+chain/.anchor/
+chain/target/
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# OS
+.DS_Store
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

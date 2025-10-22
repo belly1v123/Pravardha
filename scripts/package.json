@@ -1,0 +1,24 @@
+{
+    "name": "pravardha-scripts",
+    "version": "1.0.0",
+    "description": "Pravardha automation scripts",
+    "type": "module",
+    "scripts": {
+        "seed": "tsx seed_device.ts",
+        "merkle": "tsx compute_merkle_and_anchor.ts",
+        "anchor": "tsx anchor_submit.ts"
+    },
+    "dependencies": {
+        "@coral-xyz/anchor": "^0.32.1",
+        "@solana/web3.js": "^1.87.6",
+        "@supabase/supabase-js": "^2.38.4",
+        "bn.js": "^5.2.2",
+        "dotenv": "^16.3.1"
+    },
+    "devDependencies": {
+        "@types/bn.js": "^5.2.0",
+        "@types/node": "^20.10.0",
+        "tsx": "^4.7.0",
+        "typescript": "^5.3.3"
+    }
+}
