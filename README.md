@@ -85,10 +85,7 @@ MIT License - see LICENSE file
 ## Contact
 
 For questions or demo requests:
-- GitHub Issues: [github.com/yourusername/pravardha/issues]
 - Email: pranjalkharel86@gmail.com
 - X: @pranjalkharel61 , @Pravardha25, @AadarsanD
 
 ---
-
-**Built with ❤️ for the Solana Hackathon 2025**
