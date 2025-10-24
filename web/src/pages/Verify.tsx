@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase, type Batch, type Aggregate15m, type Device } from '../lib/supabaseClient';
 import { format } from 'date-fns';
@@ -43,6 +43,71 @@ export default function Verify() {
         }
         setLoading(false);
     }
+
+    // Fallback: compute overall summary from aggregates if batch doesn't have it
+    // IMPORTANT: Hooks must be called unconditionally (before any early returns)
+    const summary = useMemo(() => {
+        if (!aggregates || aggregates.length === 0) return null;
+
+        let tempMin: number | null = null;
+        let tempMax: number | null = null;
+        let tempWeightedSum = 0;
+        let tempCount = 0;
+
+        let humidityMin: number | null = null;
+        let humidityMax: number | null = null;
+        let humidityWeightedSum = 0;
+        let humidityCount = 0;
+
+        let pressureMin: number | null = null;
+        let pressureMax: number | null = null;
+        let pressureWeightedSum = 0;
+        let pressureCount = 0;
+
+        for (const a of aggregates) {
+            // temperature
+            if (a.temp_min != null) tempMin = tempMin == null ? a.temp_min : Math.min(tempMin, a.temp_min);
+            if (a.temp_max != null) tempMax = tempMax == null ? a.temp_max : Math.max(tempMax, a.temp_max);
+            if (a.temp_avg != null && a.sample_count > 0) {
+                tempWeightedSum += a.temp_avg * a.sample_count;
+                tempCount += a.sample_count;
+            }
+
+            // humidity
+            if (a.humidity_min != null) humidityMin = humidityMin == null ? a.humidity_min : Math.min(humidityMin, a.humidity_min);
+            if (a.humidity_max != null) humidityMax = humidityMax == null ? a.humidity_max : Math.max(humidityMax, a.humidity_max);
+            if (a.humidity_avg != null && a.sample_count > 0) {
+                humidityWeightedSum += a.humidity_avg * a.sample_count;
+                humidityCount += a.sample_count;
+            }
+
+            // pressure
+            if (a.pressure_min != null) pressureMin = pressureMin == null ? a.pressure_min : Math.min(pressureMin, a.pressure_min);
+            if (a.pressure_max != null) pressureMax = pressureMax == null ? a.pressure_max : Math.max(pressureMax, a.pressure_max);
+            if (a.pressure_avg != null && a.sample_count > 0) {
+                pressureWeightedSum += a.pressure_avg * a.sample_count;
+                pressureCount += a.sample_count;
+            }
+        }
+
+        return {
+            temperature: {
+                min: tempMin,
+                max: tempMax,
+                avg: tempCount > 0 ? tempWeightedSum / tempCount : null,
+            },
+            humidity: {
+                min: humidityMin,
+                max: humidityMax,
+                avg: humidityCount > 0 ? humidityWeightedSum / humidityCount : null,
+            },
+            pressure: {
+                min: pressureMin,
+                max: pressureMax,
+                avg: pressureCount > 0 ? pressureWeightedSum / pressureCount : null,
+            },
+        } as const;
+    }, [aggregates]);
 
     if (loading) return <div className="container"><div className="loading">Loading certificate...</div></div>;
     if (!batch) return <div className="container"><div className="error">Batch not found</div></div>;
@@ -105,23 +170,23 @@ export default function Verify() {
                     <div className="stat-card">
                         <div className="stat-label">Temperature Range</div>
                         <div className="stat-value" style={{ fontSize: '20px' }}>
-                            {batch.temp_overall_min?.toFixed(1) || '--'} - {batch.temp_overall_max?.toFixed(1) || '--'} °C
+                            {(batch.temp_overall_min ?? summary?.temperature.min)?.toFixed?.(1) || '--'} - {(batch.temp_overall_max ?? summary?.temperature.max)?.toFixed?.(1) || '--'} °C
                         </div>
-                        <div className="stat-label">Avg: {batch.temp_overall_avg?.toFixed(1) || '--'} °C</div>
+                        <div className="stat-label">Avg: {(batch.temp_overall_avg ?? summary?.temperature.avg)?.toFixed?.(1) || '--'} °C</div>
                     </div>
                     <div className="stat-card">
                         <div className="stat-label">Humidity Range</div>
                         <div className="stat-value" style={{ fontSize: '20px' }}>
-                            {batch.humidity_overall_min?.toFixed(1) || '--'} - {batch.humidity_overall_max?.toFixed(1) || '--'} %
+                            {(batch.humidity_overall_min ?? summary?.humidity.min)?.toFixed?.(1) || '--'} - {(batch.humidity_overall_max ?? summary?.humidity.max)?.toFixed?.(1) || '--'} %
                         </div>
-                        <div className="stat-label">Avg: {batch.humidity_overall_avg?.toFixed(1) || '--'} %</div>
+                        <div className="stat-label">Avg: {(batch.humidity_overall_avg ?? summary?.humidity.avg)?.toFixed?.(1) || '--'} %</div>
                     </div>
                     <div className="stat-card">
                         <div className="stat-label">Pressure Range</div>
                         <div className="stat-value" style={{ fontSize: '20px' }}>
-                            {batch.pressure_overall_min?.toFixed(0) || '--'} - {batch.pressure_overall_max?.toFixed(0) || '--'} hPa
+                            {(batch.pressure_overall_min ?? summary?.pressure.min)?.toFixed?.(0) || '--'} - {(batch.pressure_overall_max ?? summary?.pressure.max)?.toFixed?.(0) || '--'} hPa
                         </div>
-                        <div className="stat-label">Avg: {batch.pressure_overall_avg?.toFixed(0) || '--'} hPa</div>
+                        <div className="stat-label">Avg: {(batch.pressure_overall_avg ?? summary?.pressure.avg)?.toFixed?.(0) || '--'} hPa</div>
                     </div>
                 </div>
             </div>

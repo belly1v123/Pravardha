@@ -27,8 +27,8 @@
 // ============================================================================
 
 // WiFi credentials
-#define WIFI_SSID "Pranjal_2.4"
-#define WIFI_PASSWORD "PK@98400"
+#define WIFI_SSID "DSH-Nepal"
+#define WIFI_PASSWORD "Nepal_DSH@#123"
 
 // Device authentication (from seed_device.ts output)
 #define DEVICE_ID "80e4fcc6-f629-421a-ae0d-3f7cca664574"

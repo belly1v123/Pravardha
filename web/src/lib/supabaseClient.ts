@@ -71,6 +71,9 @@ export type Batch = {
     humidity_overall_min: number | null;
     humidity_overall_max: number | null;
     humidity_overall_avg: number | null;
+    pressure_overall_min: number | null;
+    pressure_overall_max: number | null;
+    pressure_overall_avg: number | null;
     certificate_url: string | null;
     created_at: string;
     closed_at: string | null;
