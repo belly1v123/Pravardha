@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase, type Batch, type Aggregate15m, type Device } from '../lib/supabaseClient';
 import { format } from 'date-fns';
+import logoUrl from '/Pravardha.png';
 
 export default function Verify() {
     const { batchId } = useParams<{ batchId: string }>();
@@ -117,9 +118,12 @@ export default function Verify() {
 
     return (
         <div className="container">
-            <div className="card" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-                <h1 style={{ color: 'white', marginBottom: '8px' }}>🌱 Environmental Certificate</h1>
-                <p style={{ opacity: 0.9 }}>Verifiable on-chain proof of environmental conditions</p>
+            <div className="hero">
+                <img src={logoUrl} alt="Pravardha" className="logo" />
+                <div>
+                    <h1 className="hero-title">Environmental Certificate</h1>
+                    <p className="hero-sub">Verifiable on-chain proof of environmental conditions</p>
+                </div>
             </div>
 
             <div className="grid grid-2" style={{ marginBottom: '24px' }}>
@@ -140,22 +144,20 @@ export default function Verify() {
                     <h3>On-Chain Verification</h3>
                     <div style={{ marginTop: '16px' }}>
                         {anchoredCount === totalWindows && totalWindows > 0 ? (
-                            <div style={{ padding: '16px', background: '#d1fae5', borderRadius: '8px' }}>
-                                <div style={{ fontSize: '48px', textAlign: 'center' }}>✅</div>
-                                <p style={{ textAlign: 'center', fontWeight: 600, color: '#065f46', marginTop: '8px' }}>
-                                    Fully Verified
+                            <div className="status-panel status-success">
+                                <p style={{ textAlign: 'center', fontWeight: 600 }}>
+                                    <span className="dot dot-success" /> Fully Verified
                                 </p>
-                                <p style={{ textAlign: 'center', color: '#059669', fontSize: '14px', marginTop: '4px' }}>
+                                <p style={{ textAlign: 'center', fontSize: '14px', marginTop: '4px' }}>
                                     All {totalWindows} windows anchored on Solana
                                 </p>
                             </div>
                         ) : (
-                            <div style={{ padding: '16px', background: '#fef3c7', borderRadius: '8px' }}>
-                                <div style={{ fontSize: '48px', textAlign: 'center' }}>⏳</div>
-                                <p style={{ textAlign: 'center', fontWeight: 600, color: '#92400e', marginTop: '8px' }}>
-                                    Partially Verified
+                            <div className="status-panel status-warning">
+                                <p style={{ textAlign: 'center', fontWeight: 600 }}>
+                                    <span className="dot dot-warning" /> Partially Verified
                                 </p>
-                                <p style={{ textAlign: 'center', color: '#d97706', fontSize: '14px', marginTop: '4px' }}>
+                                <p style={{ textAlign: 'center', fontSize: '14px', marginTop: '4px' }}>
                                     {anchoredCount} of {totalWindows} windows anchored
                                 </p>
                             </div>

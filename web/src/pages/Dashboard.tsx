@@ -80,6 +80,14 @@ export default function Dashboard() {
     const selectedDevice = devices.find(d => d.id === selectedDeviceId);
     const lastReading = readings[readings.length - 1];
 
+    // Consider a device online if it has checked in within the last 5 minutes
+    const isOnline = (() => {
+        const lastSeen = selectedDevice?.last_seen_at ? new Date(selectedDevice.last_seen_at).getTime() : null;
+        if (!lastSeen) return false;
+        const fiveMinutes = 5 * 60 * 1000;
+        return Date.now() - lastSeen <= fiveMinutes;
+    })();
+
     // Prepare chart data
     const chartData = readings.map(r => ({
         time: format(new Date(r.ts_server), 'HH:mm'),
@@ -123,10 +131,8 @@ export default function Dashboard() {
                         </select>
                     </div>
                     <div>
-                        {selectedDevice?.last_seen_at ? (
-                            <span className="badge badge-success">
-                                Online - {format(new Date(selectedDevice.last_seen_at), 'HH:mm:ss')}
-                            </span>
+                        {isOnline ? (
+                            <span className="badge badge-success">Online</span>
                         ) : (
                             <span className="badge badge-error">Offline</span>
                         )}
